@@ -1,0 +1,11 @@
+{
+    "require-dev": {
+        "phpunit/phpunit": "^9.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "Api\\Classes\\Controllers\\": "api/classes/controllers/",
+            "Api\\Classes\\Models\\": "api/classes/models/"
+        }
+    }
+}
