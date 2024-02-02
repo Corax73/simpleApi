@@ -17,7 +17,7 @@ class Report extends AbstractModel
      * Downloading data of all reports.
      * @return array
      */
-    public function getAll(): array
+    public function index(): array
     {
         $query = 'SELECT * FROM ' . $this->table;
         $stmt = $this->connect->connect(PATH_CONF)->prepare($query);
@@ -31,7 +31,7 @@ class Report extends AbstractModel
      * @param int $id
      * @return array
      */
-    public function getOne(int $id): array
+    public function show(int $id): array
     {
         $query = 'SELECT * FROM ' . $this->table . ' WHERE `id` = :id';
         $params = [
@@ -49,7 +49,7 @@ class Report extends AbstractModel
      * @param string $check_id
      * @return bool
      */
-    public function saveReport(string $payment, string $check_id): bool
+    public function save(string $payment, string $check_id): bool
     {
         $query = 'INSERT INTO ' . $this->table . ' (payment, check_id, created_at) VALUES (:payment, :check_id, :now)';
         $params = [
@@ -64,22 +64,45 @@ class Report extends AbstractModel
     /**
      * Updates report data.
      * @param array $newData
-     * @param int $report_id
+     * @param int $id
      * @return bool
      */
-    public function updateReport(array $newData, int $report_id): bool
+    public function update(array $newData, int $id): bool
     {
-        $keys = array_keys($newData);
-        $query = 'UPDATE ' . $this->table . ' SET ';
-        $params = [];
-        foreach ($keys as $key) {
-            $query .= '`' . $key . '` = :' . $key . ', ';
-            $params[':' . $key] = $newData[$key];
-        }
-        $query = mb_substr($query, 0, -2);
-        $query .= ' WHERE `id` = ' . $report_id;
+        $resp = false;
+        if ($this->show($id)) {
+            $keys = array_keys($newData);
+            $query = 'UPDATE ' . $this->table . ' SET ';
+            $params = [];
+            foreach ($keys as $key) {
+                $query .= '`' . $key . '` = :' . $key . ', ';
+                $params[':' . $key] = $newData[$key];
+            }
+            $query = mb_substr($query, 0, -2);
+            $query .= ' WHERE `id` = ' . $id;
 
-        $stmt = $this->connect->connect(PATH_CONF)->prepare($query);
-        return $stmt->execute($params);
+            $stmt = $this->connect->connect(PATH_CONF)->prepare($query);
+            $resp =  $stmt->execute($params);
+        }
+        return $resp;
+    }
+
+    /**
+     * Deletes the report.
+     * @param int $id
+     * @return bool
+     */
+    public function delete(int $id): bool
+    {
+        $resp = false;
+        if ($this->show($id)) {
+            $query = 'DELETE FROM ' . $this->table . ' WHERE `id` = :id';
+            $params = [
+                ':id' => $id
+            ];
+            $stmt = $this->connect->connect(PATH_CONF)->prepare($query);
+            $resp = $stmt->execute($params);
+        }
+        return $resp;
     }
 }

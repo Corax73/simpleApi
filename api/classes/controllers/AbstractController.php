@@ -5,7 +5,7 @@ namespace Api\Classes\Controllers;
 use Exception;
 use RuntimeException;
 
-abstract class AbstractApi
+abstract class AbstractController
 {
     public $apiName = '';
     protected $method = '';

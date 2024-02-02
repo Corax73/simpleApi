@@ -4,7 +4,7 @@ namespace Api\Classes\Controllers;
 
 use Api\Classes\Models\Report;
 
-class ReportsApi extends AbstractApi
+class ReportsController extends AbstractController
 {
     public $apiName = 'reports';
 
@@ -15,7 +15,7 @@ class ReportsApi extends AbstractApi
     public function index()
     {
         $report = new Report();
-        $reports = $report->getAll();
+        $reports = $report->index();
         $resp = ['Data not found'];
         $status = 404;
         if ($reports) {
@@ -35,7 +35,7 @@ class ReportsApi extends AbstractApi
 
         if ($id) {
             $report = new Report();
-            $reports = $report->getOne($id);
+            $reports = $report->show($id);
             $resp = ['Data not found'];
             $status = 404;
             if ($reports) {
@@ -57,7 +57,7 @@ class ReportsApi extends AbstractApi
         $resp = false;
         if ($payment && $check_id) {
             $report = new Report();
-            $resp = $report->saveReport($payment, $check_id);
+            $resp = $report->save($payment, $check_id);
         }
         return $this->response($resp ? ['Data saved.'] : ['Error.'], 500);
     }
@@ -80,7 +80,7 @@ class ReportsApi extends AbstractApi
         }
         if ($reportId && $newData) {
             $report = new Report();
-            if ($report->updateReport($newData, $reportId)) {
+            if ($report->update($newData, $reportId)) {
                 $resp = ['Data updated.'];
                 $status = 200;
             }
@@ -88,8 +88,22 @@ class ReportsApi extends AbstractApi
         return $this->response($resp, $status);
     }
 
+    /**
+     * Deletes the record.
+     * @return string
+     */
     public function delete()
     {
-        
+        $resp = ['Report not found.'];
+        $status = 404;
+        $reportId = array_shift($this->requestUri);
+        if ($reportId) {
+            $report = new Report();
+            if ($report->delete($reportId)) {
+                $resp = ['Report deleted.'];
+                $status = 200;
+            }
+        }
+        return $this->response($resp, $status);
     }
 }
