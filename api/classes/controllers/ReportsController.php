@@ -72,10 +72,10 @@ class ReportsController extends AbstractController
         $status = 404;
         $reportId = array_shift($this->requestUri);
         $newData = [];
-        if ($this->requestParams['payment']) {
+        if (isset($this->requestParams['payment'])) {
             $newData['payment'] = $this->requestParams['payment'];
         }
-        if ($this->requestParams['check_id']) {
+        if (isset($this->requestParams['check_id'])) {
             $newData['check_id'] = $this->requestParams['check_id'];
         }
         if ($reportId && $newData) {

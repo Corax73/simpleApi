@@ -72,17 +72,20 @@ class Report extends AbstractModel
         $resp = false;
         if ($this->show($id)) {
             $keys = array_keys($newData);
-            $query = 'UPDATE ' . $this->table . ' SET ';
-            $params = [];
-            foreach ($keys as $key) {
-                $query .= '`' . $key . '` = :' . $key . ', ';
-                $params[':' . $key] = $newData[$key];
-            }
-            $query = mb_substr($query, 0, -2);
-            $query .= ' WHERE `id` = ' . $id;
+            $check = array_diff($keys, $this->fillable);
+            if (!$check) {
+                $query = 'UPDATE ' . $this->table . ' SET ';
+                $params = [];
+                foreach ($keys as $key) {
+                    $query .= '`' . $key . '` = :' . $key . ', ';
+                    $params[':' . $key] = $newData[$key];
+                }
+                $query = mb_substr($query, 0, -2);
+                $query .= ' WHERE `id` = ' . $id;
 
-            $stmt = $this->connect->connect(PATH_CONF)->prepare($query);
-            $resp =  $stmt->execute($params);
+                $stmt = $this->connect->connect(PATH_CONF)->prepare($query);
+                $resp =  $stmt->execute($params);
+            }
         }
         return $resp;
     }
